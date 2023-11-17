@@ -1,0 +1,72 @@
+clc;clear all;close all;
+f=1.5;
+t=0:0.01:2;
+b=randi([0,1],1,10);
+disp(b);
+c=cos(2*pi*f*t);
+modu_sig=[];carr_sig=[];org_sig=[];
+
+%BPSK MODULATION:
+for k=1:length(b)
+    if(b(k)==1)
+        modu_sig=[modu_sig cos(2*pi*f*t)];
+        org_sig=[org_sig ones(1,length(t))];
+    else
+        modu_sig=[modu_sig cos((2*pi*f*t)-pi)];
+        org_sig=[org_sig zeros(1,length(t))];
+   
+    end
+    
+    carr_sig=[carr_sig c];
+end
+disp(modu_sig);
+
+%BPSK DEMODULATION:
+rec_sig=awgn(modu_sig,10);
+dem_sig=rec_sig.*carr_sig;
+
+subplot(611);
+plot(carr_sig);xlabel("time");ylabel("AMPLITUDE");title("CARRIER SIGNAL");
+subplot(612);
+plot(modu_sig);xlabel("time");ylabel("AMPLITUDE");title("BPSK SIGNAL");
+subplot(613);
+plot(rec_sig);xlabel("time");ylabel("AMPLITUDE");
+title("BPSK SIGNAL(NOISE ADDED)");
+subplot(614);
+plot(dem_sig);xlabel("time");ylabel("AMPLITUDE");title("DEMODULATED SIGNAL")
+subplot(615);
+plot(org_sig);xlabel("time");ylabel("AMPLITUDE");title("ORIGINAL SIGNAL")
+dem=[];
+for i=1:length(b)
+    k=sum(dem_sig(1+(i-1)*length(t):i*length(t)));
+    if (k>0)
+        dem=[dem ones(1,length(t))];
+    else
+        dem=[dem zeros(1,length(t))];
+    end
+end
+subplot(616)
+plot(dem)
+
+%---------------------------------------------------------------------------------------------------------------------------------------%
+
+%---------------------------------------------------------------------------------------------------------------------------------------
+%BER VS SNR
+
+
+%clc;clear all;close all;
+%n=1e7;
+%b=randi([0,1],n,1);
+%bpskmod = comm.BPSKModulator;
+%bpskdemod = comm.BPSKDemodulator;
+%b_mod=bpskmod(b);
+%SNR=0:1:10;ber=[];
+%for snr=0:10
+    %b_nois=awgn(b_mod,snr);
+    %b_demod=bpskdemod(b_nois);
+    %err=biterr(b,b_demod);
+    %rate=err/n;
+    %ber=[ber rate];
+%end
+%semilogy(0:1:10,ber);
+%grid on;
