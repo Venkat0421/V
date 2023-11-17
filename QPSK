@@ -1,0 +1,77 @@
+clc;
+clear;
+close all;
+t=0:0.01:1;
+f=5;
+m=randi([0,1],1,10);
+carrier_sig1=[];
+carrier_sig2=[];
+qpsk_sig=[];
+msg_sig=[];
+for i=1:length(m)
+ if m(i)==0
+ m(i)=-1;
+ msg_sig=[msg_sig zeros(1,length(t/2))];
+ else
+ msg_sig=[msg_sig ones(1,length(t/2))];
+ end
+end
+for i=1:2:length(m)
+ q1=m(i)*cos(2*pi*f*t);
+ q2=m(i+1)*sin(2*pi*f*t);
+ Q=q1+q2;
+ qpsk_sig=[qpsk_sig Q];
+ carrier_sig1=[carrier_sig1 cos(2*pi*f*t)];
+ carrier_sig2=[carrier_sig2 sin(2*pi*f*t)];
+end
+figure
+subplot(6,1,1);
+plot(msg_sig);
+xlabel('time');
+ylabel('amp');
+ylim([-0.5 1.5]);
+title('message signal');
+subplot(6,1,2);
+plot(qpsk_sig);
+xlabel('time');
+ylabel('amp');
+title('qpsk signal');
+noise_sig=awgn(qpsk_sig,12);
+subplot(6,1,3);
+plot(noise_sig);
+xlabel('time');
+ylabel('amp');
+title('qpsk signal with noise');
+dem_sig1=(noise_sig).*(carrier_sig1);
+subplot(6,1,4);
+plot(dem_sig1);
+xlabel('time');
+ylabel('amp');
+title('demodulated signal 1');
+dem_sig2=(noise_sig).*(carrier_sig2);
+subplot(6,1,5);
+plot(dem_sig2);
+xlabel('time');
+ylabel('amp');
+title('demodulated signal 2');
+demod_sig=[];
+for i=1:length(m)/2
+ k1=sum(dem_sig1((1+(i-1)*length(t)):(i*length(t))));
+ k2=sum(dem_sig2((1+(i-1)*length(t)):(i*length(t))));
+ if k1>0
+ demod_sig=[demod_sig ones(1,length(t))];
+ else
+ demod_sig=[demod_sig zeros(1,length(t))];
+ end
+ if k2>0
+ demod_sig=[demod_sig ones(1,length(t))];
+ else
+ demod_sig=[demod_sig zeros(1,length(t))];
+ end
+end
+ subplot(6,1,6);
+ plot(demod_sig);
+ ylim([-0.5 1.5]);
+ xlabel('time');
+ ylabel('amp');
+ title('original msg signal');
