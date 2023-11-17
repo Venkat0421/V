@@ -1,0 +1,34 @@
+clc;
+clear all;
+close all;
+N = 500; % Total number of samples
+M = 8; % QAM modulation order (change as needed)
+% Generate a random message signal
+message_signal = randi ([0, 1], 1, N);
+% QAM Modulation
+modulated_signal = qammod (message_signal, M);
+% QAM Demodulation
+demodulated_signal = qamdemod (modulated_signal, M);
+% Plot the message signal
+subplot (3,1,1);
+plot(message_signal);
+title('Message Signal');
+xlabel('Sample Index');
+ylabel('Amplitude');
+% Plot the modulated signal
+subplot (3,1, 2);
+plot (real (modulated_signal), 'b', 'linewidth', 1.5);
+hold on;
+plot (imag(modulated_signal), 'g', 'linewidth', 1.5);
+title('Modulated Signal');
+xlabel('Sample Index');
+ylabel('Amplitude');
+legend ('Real', 'Imaginary');
+% Plot the demodulated signal
+subplot(3,1,3);
+plot(demodulated_signal);
+title('Demodulated Signal');
+xlabel('Sample Index');
+ylabel('Amplitude');
+% Adjust plot spacing
+sgtitle('QAM Modulation and Demodulation ');
