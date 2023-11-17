@@ -1,0 +1,31 @@
+clc;clear all;close all;
+
+n=10^5;M=16;
+
+b=randi([0,1],n,4);
+
+k=bi2de(b);
+
+b_mod=qammod(k,M);
+
+ber=[];
+
+for snr=0:12
+
+    b_nois=awgn(b_mod,snr);
+
+    b_demod=qamdemod(b_nois,M);
+
+    err=biterr(k,b_demod);
+
+    rate=err/n;
+
+    ber=[ber rate];
+
+end
+
+semilogy(0:12,ber,"-k*");
+
+grid on;
+
+scatterplot(b_mod);
